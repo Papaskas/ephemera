@@ -1,0 +1,8 @@
+- No friends list
+- No sign up / sign in
+- Temporary accounts only
+- All chats are temporary
+- No long-term data storage
+- The database stores only encrypted data
+- The database does not store encryption keys
+- Encryption keys are stored locally on the client
