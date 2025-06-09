@@ -6,3 +6,4 @@
 - The database stores only encrypted data
 - The database does not store encryption keys
 - Encryption keys are stored locally on the client
+- Without date and time
