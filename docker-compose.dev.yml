@@ -1,0 +1,61 @@
+services:
+  db:
+    image: ${DB_IMAGE}
+    container_name: db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+    volumes:
+      - mongo-data:/data/db
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    networks:
+      - db_network
+    healthcheck:
+      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    restart: always
+    environment:
+      NODE_ENV: development
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    networks:
+      - db_network
+      - proxy_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+  prisma-studio:
+    image: ${NODE_IMAGE}
+    working_dir: /usr/src/app
+    volumes:
+      - .:/usr/src/app
+    command: npx prisma studio --port 5555 --browser none
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    networks:
+      - db_network
+      - proxy_network
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  mongo-data:
+
+networks:
+  db_network:
+  proxy_network:
