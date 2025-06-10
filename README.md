@@ -1,13 +1,15 @@
 # Dev
 
 ## Quick start dev
-Install deps on host:
+1. Fill in the .env file
+
+2. Install deps on host:
 ```bash
   yarn install 
   npx prisma generate
 ```
 
-Run container:
+3. Run container:
 ```bash
   docker compose -f docker-compose.dev.yml up -d
 ```
@@ -15,7 +17,9 @@ Run container:
 # Prod
 
 ## Quick start prod
-Run container
+1. Fill in the .env file
+
+2. Run container
 ```bash
   docker compose -f docker-compose.prod.yml up -d
 ```
