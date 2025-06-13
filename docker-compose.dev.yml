@@ -4,42 +4,20 @@ services:
     container_name: ${APP_NAME}-db
     restart: always
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
-    volumes:
-      - mongo-data:/data/db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "${DB_PORT}:${DB_PORT}"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
     networks:
       - db_network
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}" ]
       interval: 10s
       timeout: 10s
       retries: 5
-
-  app:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-    restart: always
-    environment:
-      NODE_ENV: development
-    volumes:
-      - .:/app
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.app.rule=Host(`${WWW_DOMAIN}`)"
-      - "traefik.http.routers.app.entrypoints=web"
-      - "traefik.http.services.app.loadbalancer.server.port=3000"
-    networks:
-      - db_network
-      - proxy_network
-    depends_on:
-      db:
-        condition: service_healthy
-      traefik:
-        condition: service_healthy
 
   prisma-studio:
     image: ${NODE_IMAGE}
@@ -47,79 +25,24 @@ services:
     volumes:
       - .:/usr/src/app
     command: npx prisma studio --port 5555 --browser none
-    env_file:
-      - .env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.prisma.rule=Host(`${PRISMA_DOMAIN}`)"
-      - "traefik.http.routers.prisma.entrypoints=web"
-      - "traefik.http.services.prisma.loadbalancer.server.port=5555"
-    networks:
-      - db_network
-      - proxy_network
-    depends_on:
-      db:
-        condition: service_healthy
-      traefik:
-        condition: service_healthy
-
-  traefik:
-    image: ${TRAEFIK_IMAGE}
-    command:
-      - "--log.level=${TRAEFIK_LOG_LEVEL}"
-      - "--api.insecure=true"
-      - "--api.dashboard=true"
-      - "--providers.docker=true"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--providers.docker.endpoint=unix:///var/run/docker.sock"
-      - "--certificatesresolvers.resolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.resolver.acme.email=${APP_EMAIL}"
-      - "--certificatesresolvers.resolver.acme.storage=/letsencrypt/acme.json"
-      - "--ping=true"
-      - "--ping.entrypoint=ping"
-      - "--entrypoints.ping.address=:8082"
-    labels:
-      # Enable Traefik for this container
-      - "traefik.enable=true"
-      # A router to expose the Traefik dashboard
-      - "traefik.http.routers.dashboard.rule=Host(`${TRAEFIK_DOMAIN}`)"
-      - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.tls=true"
-      - "traefik.http.routers.dashboard.tls.certresolver=resolver"
-      - "traefik.http.routers.dashboard.service=api@internal"
-      # Basic Authentication for the Traefik dashboard
-      - "traefik.http.routers.dashboard.middlewares=authtraefik"
-      - "traefik.http.middlewares.authtraefik.basicauth.users=${TRAEFIK_BASIC_AUTH}"
-      # Specify the internal server port to the dashboard service
-      - "traefik.http.services.dashboard.loadbalancer.server.port=8080"
-      # Pass the original Host header to the backend
-      - "traefik.http.services.dashboard.loadbalancer.passhostheader=true"
-      # HTTP -> HTTPS redirect for all hosts
-      - "traefik.http.routers.http-catchall.rule=HostRegexp(`{host:.+}`)"
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+    ports:
+      - "5555:5555"
+    environment:
+      DB_URL: "postgresql://${DB_USER}:${DB_PASS}@${APP_NAME}-db:${DB_PORT}/${DB_NAME}?schema=public"
     healthcheck:
-      test: [ "CMD", "wget", "http://localhost:8082/ping","--spider" ]
+      test: [ "CMD-SHELL", "npx prisma db pull --schema=prisma/schema.prisma > /dev/null 2>&1"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 5s
-    ports:
-      - "80:80"
-      - "443:443"
     networks:
-      - proxy_network
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - letsencrypt-data:/letsencrypt
-    restart: unless-stopped
+      - db_network
+    depends_on:
+      db:
+        condition: service_healthy
 
 volumes:
-  mongo-data:
-  letsencrypt-data:
+  pg-data:
 
 networks:
   db_network:
-  proxy_network:
