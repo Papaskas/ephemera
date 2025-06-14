@@ -2,7 +2,7 @@ services:
   db:
     image: ${DB_IMAGE}
     container_name: ${APP_NAME}-db
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASS}
@@ -11,38 +11,17 @@ services:
       - "${DB_PORT}:${DB_PORT}"
     volumes:
       - pg-data:/var/lib/postgresql/data
-    networks:
-      - db_network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${DB_USER}" ]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-
-  prisma-studio:
-    image: ${NODE_IMAGE}
-    working_dir: /usr/src/app
-    volumes:
-      - .:/usr/src/app
-    command: npx prisma studio --port 5555 --browser none
-    ports:
-      - "5555:5555"
-    environment:
-      DB_URL: "postgresql://${DB_USER}:${DB_PASS}@${APP_NAME}-db:${DB_PORT}/${DB_NAME}?schema=public"
-    healthcheck:
-      test: [ "CMD-SHELL", "npx prisma db pull --schema=prisma/schema.prisma > /dev/null 2>&1"]
+      test: [ "CMD", "pg_isready", "-q", "-d", "${DB_NAME}", "-U", "${DB_USER}" ]
       interval: 10s
       timeout: 5s
       retries: 3
-      start_period: 5s
+      start_period: 60s
     networks:
-      - db_network
-    depends_on:
-      db:
-        condition: service_healthy
+      - db-network
 
 volumes:
   pg-data:
 
 networks:
-  db_network:
+  db-network:
