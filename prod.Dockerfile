@@ -4,21 +4,29 @@ FROM base AS builder
 
 WORKDIR /app
 
-COPY package.json yarn.lock ./
-RUN yarn --frozen-lockfile
+ARG NEXT_PUBLIC_BACKEND_URL
+ENV NEXT_PUBLIC_BACKEND_URL=$NEXT_PUBLIC_BACKEND_URL
+
+COPY package.json package-lock.json ./
+
+RUN npm ci
 
 COPY src ./src
 COPY public ./public
 COPY next.config.ts .
 COPY tsconfig.json .
+COPY prisma ./prisma
 
-RUN yarn build
+RUN npm run db:generate
+
+RUN npm run build
 
 FROM base AS runner
 
 WORKDIR /app
 
-RUN npx prisma generate
+ARG NODE_ENV
+ENV NODE_ENV=$NODE_ENV
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
@@ -31,4 +39,4 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["node", "server.js", "-H", "0.0.0.0", "-p", "3000"]

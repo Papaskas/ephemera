@@ -15,7 +15,7 @@ Before you begin, ensure you have the following installed:
 
 - **Node.js** `v16+`
 - **Docker** & **Docker Compose**
-- **Yarn** package manager
+- **npm** package manager
 
 ## ⚡ Quick Start
 
@@ -25,16 +25,16 @@ Before you begin, ensure you have the following installed:
 
 ```shell
 # Install dependencies
-yarn install
+npm install
 
 # Start Docker services (database, redis, etc.)
-yarn docker:dev
+npm run docker:dev
 
 # Run database migrations
-yarn db:migrate
+npm run db:migrate
 
 # Start the application
-yarn dev
+npm run dev
 ```
 
 > 🎉 That's it! Your application should be running at http://localhost:3000
@@ -46,7 +46,7 @@ yarn dev
 Launch the database GUI to view and edit your data:
 
 ```shell
-yarn db:studio
+npm run db:studio
 ```
 
 > 📍 Access: http://localhost:5555
@@ -55,23 +55,22 @@ yarn db:studio
 
 ```shell
 # 🔥 Development
-yarn dev          # Start development server
-yarn build        # Build for production
-yarn start        # Start production server
-yarn lint         # Run ESLint
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
 
 # 🐳 Docker
-yarn docker:dev   # Start development containers
-yarn docker:prod  # Start production containers
-yarn docker:down  # Stop all containers
-yarn docker:clean # Stop and remove all containers + volumes
+npm run docker:dev   # Start development containers
+npm run docker:prod  # Start production containers
+npm run docker:down  # Stop all containers
 
 # 🗃 Database
-yarn db:studio    # Open Prisma Studio
-yarn db:migrate   # Run migrations
-yarn db:generate  # Generate Prisma client
-yarn db:seed      # Seed database
-yarn db:reset     # Reset database
+npm run db:studio    # Open Prisma Studio
+npm run db:migrate   # Run migrations
+npm run db:generate  # Generate Prisma client
+npm run db:seed      # Seed database
+npm run db:reset     # Reset database
 ```
 
 ## 🌐 Production Deployment
