@@ -15,8 +15,7 @@
     "db:reset": "prisma migrate reset",
 
     "docker:dev": "docker compose -f docker-compose.dev.yml up -d",
-    "docker:prod": "docker compose -f docker-compose.prod.yml up -d",
-    "docker:down": "docker compose down",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d"
   },
   "dependencies": {
     "@next/env": "^15.3.3",
@@ -37,5 +36,6 @@
     "prisma": "6.9.0",
     "tailwindcss": "^4",
     "typescript": "^5"
-  }
+  },
+  "packageManager": "yarn@4.9.2"
 }
