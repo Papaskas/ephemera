@@ -1,11 +1,11 @@
 # 🚀 Ephemera
 
-> Modern web application built with Next.js, Prisma, and Docker
+> Modern social network built with Next.js, Prisma, and Docker
 
 ## 📋 Table of Contents
 
 - [Prerequisites](#-prerequisites)
-- [Quick Start](#-quick-start)
+- [Quick Start](#-quick-start---dev)
 - [Database Management](#-database-management)
 - [Available Commands](#-available-commands)
 
@@ -15,9 +15,9 @@ Before you begin, ensure you have the following installed:
 
 - **Node.js** `v16+`
 - **Docker** & **Docker Compose**
-- **npm** package manager
+- **yarn** package manager
 
-## ⚡ Quick Start
+## ⚡ Quick Start - dev
 
 ### Environment Setup
 
