@@ -12,7 +12,7 @@ datasource db {
 /// The user of the system
 model User {
   id           Int            @id @default(autoincrement())
-  publicId     String         @unique @default(uuid())
+  userId       String         @unique @default(uuid())
   profile      UserProfile?
   messages     Message[]
   refreshToken RefreshToken[]
@@ -26,8 +26,8 @@ model User {
 /// User Information
 model UserProfile {
   id        Int      @id @default(autoincrement())
-  userId    Int      @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
   username  String   @unique @db.VarChar(32)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -35,14 +35,14 @@ model UserProfile {
   @@index([username])
 }
 
-/// The update token for authorization (JWT)
+/// The update token for authorization (REFRESH_TOKEN)
 model RefreshToken {
   id        Int       @id @default(autoincrement())
   token     String    @unique @db.VarChar(255)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
   deletedAt DateTime?
 
   @@index([userId])
@@ -54,8 +54,8 @@ model RefreshToken {
 model Message {
   id        Int       @id @default(autoincrement())
   body      String    @db.VarChar(1024)
-  userId    Int
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
   deletedAt DateTime?
