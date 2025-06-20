@@ -9,15 +9,58 @@ datasource db {
   url      = env("DB_URL")
 }
 
+/// The user of the system
 model User {
-  id       Int       @id @default(autoincrement())
-  nickname String?   @unique
-  messages Message[]
+  id           Int            @id @default(autoincrement())
+  publicId     String         @unique @default(uuid())
+  profile      UserProfile?
+  messages     Message[]
+  refreshToken RefreshToken[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+  deletedAt    DateTime?
+
+  @@index([deletedAt])
 }
 
+/// User Information
+model UserProfile {
+  id        Int      @id @default(autoincrement())
+  userId    Int      @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username  String   @unique @db.VarChar(32)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([username])
+}
+
+/// The update token for authorization (JWT)
+model RefreshToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([token])
+  @@index([deletedAt])
+}
+
+/// User's Message
 model Message {
-  id     Int    @id @default(autoincrement())
-  body   String
-  userId Int
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        Int       @id @default(autoincrement())
+  body      String    @db.VarChar(1024)
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([deletedAt])
 }
