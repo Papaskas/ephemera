@@ -1,6 +1,6 @@
 # Shared
-> - [ ] Docker config
-> - [ ] Configure traefik
+> - [X] Docker config
+> - [X] Configure traefik
 > - [ ] Configure UI form with API
 > - [ ] Configure Auth (JWT)
 > - [ ] Configure GitHub overflows
