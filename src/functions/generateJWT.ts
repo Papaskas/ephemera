@@ -1,5 +1,4 @@
 import { JWTPayload, SignJWT } from 'jose';
-import { REFRESH_TOKEN_EXPIRES, REFRESH_TOKEN_SECRET } from '@/domain/constants/JWT';
 
 /**
  * Generates a JWT using the jose library.
@@ -12,8 +11,8 @@ import { REFRESH_TOKEN_EXPIRES, REFRESH_TOKEN_SECRET } from '@/domain/constants/
  */
 export async function generateJWT(
   payload: JWTPayload,
-  secret: string = REFRESH_TOKEN_SECRET,
-  expiresIn: string = REFRESH_TOKEN_EXPIRES,
+  secret: string,
+  expiresIn: string,
   alg: string = 'HS256',
 ): Promise<string> {
   const encoder = new TextEncoder();
