@@ -15,6 +15,7 @@ model User {
   userId       String         @unique @default(uuid())
   profile      UserProfile?
   messages     Message[]
+  accessToken  AccessToken[]
   refreshToken RefreshToken[]
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
@@ -35,7 +36,22 @@ model UserProfile {
   @@index([username])
 }
 
-/// The update token for authorization (REFRESH_TOKEN)
+/// The token for authorization
+model AccessToken {
+  id        Int       @id @default(autoincrement())
+  token     String    @unique @db.VarChar(255)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  userId    String
+  user      User      @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  deletedAt DateTime?
+
+  @@index([userId])
+  @@index([token])
+  @@index([deletedAt])
+}
+
+/// The update token for authorization
 model RefreshToken {
   id        Int       @id @default(autoincrement())
   token     String    @unique @db.VarChar(255)
