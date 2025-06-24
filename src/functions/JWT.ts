@@ -28,10 +28,10 @@ export const generateJWT = async (
 
 export const verifyJWT = async (
   token: string,
-  tokenSecret: string,
+  secret: string,
 ): Promise<TokenPayload> => {
   const encoder = new TextEncoder()
-  const { payload } = await jwtVerify(token, encoder.encode(tokenSecret))
+  const { payload } = await jwtVerify(token, encoder.encode(secret))
 
   if (!payload.userId || !payload.createdAt)
     throw new Error('Invalid token payload')
@@ -39,5 +39,17 @@ export const verifyJWT = async (
   return {
     userId: String(payload.userId),
     createdAt: new Date(payload.createdAt as string | number),
+  }
+}
+
+export const isValidJWT = async (
+  token: string,
+  secret: string,
+) => {
+  try {
+    await verifyJWT(token, secret);
+    return true;
+  } catch {
+    return false;
   }
 }
