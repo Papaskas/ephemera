@@ -8,7 +8,6 @@ import {
   REFRESH_TOKEN_SECRET
 } from '@/domain/constants/JWT';
 import { randomUUID } from 'node:crypto';
-import { COOKIES } from '@/domain/constants/cookies';
 
 export async function POST() {
   const createdAt = new Date()
@@ -24,23 +23,5 @@ export async function POST() {
     userId
   )
 
-  const response = NextResponse.next()
-
-  response.cookies.set(COOKIES.REFRESH_TOKEN.NAME, refreshToken, {
-    httpOnly: COOKIES.REFRESH_TOKEN.HTTP_ONLY,
-    path: COOKIES.REFRESH_TOKEN.PATH,
-    sameSite: COOKIES.REFRESH_TOKEN.SAME_SITE,
-    secure: COOKIES.REFRESH_TOKEN.SECURE,
-    maxAge: COOKIES.REFRESH_TOKEN.MAX_AGE
-  })
-
-  response.cookies.set(COOKIES.ACCESS_TOKEN.NAME, accessToken, {
-    httpOnly: COOKIES.ACCESS_TOKEN.HTTP_ONLY,
-    path: COOKIES.ACCESS_TOKEN.PATH,
-    sameSite: COOKIES.ACCESS_TOKEN.SAME_SITE,
-    secure: COOKIES.ACCESS_TOKEN.SECURE,
-    maxAge: COOKIES.ACCESS_TOKEN.MAX_AGE
-  })
-
-  return response
+  return NextResponse.json({ refreshToken, accessToken })
 }

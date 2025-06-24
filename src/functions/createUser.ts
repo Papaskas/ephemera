@@ -10,6 +10,7 @@ import {
 
 export async function createUser(
   refreshToken: string,
+  accessToken: string,
   createdAt: Date,
   userId: string = randomUUID(),
 ) {
@@ -21,6 +22,11 @@ export async function createUser(
         refreshToken: {
           create: [
             { token: refreshToken }
+          ]
+        },
+        accessToken: {
+          create: [
+            { token: accessToken }
           ]
         }
       },
