@@ -13,4 +13,6 @@
 | Deployment           | Dockerization             | 6000     | 2        |         |
 |                      | CORS                      | 6000     | 2        |         |
 | Dev                  | Dockerization             | 8000     | 1        | OK      |
+| GitHub               | Add description project   | 2000     | 1        | OK      |
 |                      | CI/CD Workflow            | 5000     | 2        |         |
+|                      | Add topics project        | 1000     | 1        | OK      |
