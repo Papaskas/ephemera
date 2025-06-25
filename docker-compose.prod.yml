@@ -1,42 +1,54 @@
 services:
   db:
     image: ${DB_IMAGE}
-    container_name: db
-    restart: always
+    container_name: ${APP_NAME}-db
+    restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
-      - mongo-data:/data/db
-    ports:
-      - "${DB_PORT}:${DB_PORT}"
-    networks:
-      - db_network
+      - pg-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      test: [ "CMD", "pg_isready", "-q", "-d", "${DB_NAME}", "-U", "${DB_USER}" ]
       interval: 10s
-      timeout: 10s
-      retries: 5
+      timeout: 5s
+      retries: 3
+      start_period: 60s
+    networks:
+      - db-network
 
   www:
     build:
       context: .
       dockerfile: prod.Dockerfile
+      args:
+        NEXT_PUBLIC_BACKEND_URL: https://${WWW_DOMAIN}
+        NODE_ENV: production
+        PORT: ${PORT}
+        HOSTNAME: 0.0.0.0
     restart: always
     environment:
       NEXT_PUBLIC_BACKEND_URL: https://${WWW_DOMAIN}
-    volumes:
-      - .:/app
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.www.rule=Host(`${WWW_DOMAIN}`)"
       - "traefik.http.routers.www.entrypoints=websecure"
       - "traefik.http.routers.www.tls=true"
       - "traefik.http.routers.www.tls.certresolver=resolver"
-      - "traefik.http.services.www.loadbalancer.server.port=3000"
+      - "traefik.http.services.www.loadbalancer.server.port=${PORT}"
+      - "traefik.http.services.www.loadbalancer.healthcheck.path=/api/health"
+      - "traefik.http.services.www.loadbalancer.healthcheck.interval=10s"
+      - "traefik.http.services.www.loadbalancer.healthcheck.timeout=3s"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3000/api/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
     networks:
-      - db_network
-      - proxy_network
+      - db-network
+      - proxy-network
     depends_on:
       db:
         condition: service_healthy
@@ -44,7 +56,7 @@ services:
         condition: service_healthy
 
   traefik:
-    image: traefik:v3.4
+    image: ${TRAEFIK_IMAGE}
     command:
       - "--log.level=${TRAEFIK_LOG_LEVEL}"
       - "--api.insecure=true"
@@ -90,16 +102,16 @@ services:
       - "80:80"
       - "443:443"
     networks:
-      - proxy_network
+      - proxy-network
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
       - letsencrypt-data:/letsencrypt
     restart: unless-stopped
 
 volumes:
-  mongo-data:
+  pg-data:
   letsencrypt-data:
 
 networks:
-  db_network:
-  proxy_network:
+  db-network:
+  proxy-network:

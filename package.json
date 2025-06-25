@@ -1,15 +1,25 @@
 {
-  "name": "next_learn",
+  "name": "ephemera",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:studio": "prisma studio --port 5555",
+    "db:migrate": "prisma migrate dev",
+    "db:generate": "prisma generate",
+    "db:seed": "prisma db seed",
+    "db:reset": "prisma migrate reset",
+    "docker:dev": "docker compose -f docker-compose.dev.yml up -d",
+    "docker:prod": "docker compose -f docker-compose.prod.yml up -d"
   },
   "dependencies": {
-    "@prisma/client": "^6.7.0",
+    "@next/env": "^15.3.3",
+    "@prisma/client": "6.9.0",
+    "axios": "^1.10.0",
+    "jose": "^6.0.11",
     "next": "15.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
@@ -19,13 +29,14 @@
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/postcss-load-config": "^3.0.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.3.1",
-    "prisma": "^6.7.0",
+    "prisma": "6.9.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "yarn@4.9.2"
 }

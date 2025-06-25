@@ -1,61 +1,27 @@
 services:
   db:
     image: ${DB_IMAGE}
-    container_name: db
-    restart: always
+    container_name: ${APP_NAME}-db
+    restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASS}
-    volumes:
-      - mongo-data:/data/db
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
     ports:
       - "${DB_PORT}:${DB_PORT}"
-    networks:
-      - db_network
+    volumes:
+      - pg-data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD", "mongosh", "--eval", "db.adminCommand('ping')" ]
+      test: [ "CMD", "pg_isready", "-q", "-d", "${DB_NAME}", "-U", "${DB_USER}" ]
       interval: 10s
-      timeout: 10s
-      retries: 5
-
-  app:
-    build:
-      context: .
-      dockerfile: dev.Dockerfile
-    restart: always
-    environment:
-      NODE_ENV: development
-    ports:
-      - "3000:3000"
-    volumes:
-      - .:/app
+      timeout: 5s
+      retries: 3
+      start_period: 60s
     networks:
-      - db_network
-      - proxy_network
-    depends_on:
-      db:
-        condition: service_healthy
-
-  prisma-studio:
-    image: ${NODE_IMAGE}
-    working_dir: /usr/src/app
-    volumes:
-      - .:/usr/src/app
-    command: npx prisma studio --port 5555 --browser none
-    ports:
-      - "5555:5555"
-    env_file:
-      - .env
-    networks:
-      - db_network
-      - proxy_network
-    depends_on:
-      db:
-        condition: service_healthy
+      - db-network
 
 volumes:
-  mongo-data:
+  pg-data:
 
 networks:
-  db_network:
-  proxy_network:
+  db-network:
