@@ -10,7 +10,7 @@ export default function Home() {
 
         <UserProfile />
 
-        <ChatList />
+        <ChatList chats={[{ id: '1', title: "Ivan", lastMessage: null }, { id: '2', title: 'Alex', lastMessage: 'Hello' }]} />
       </div>
 
       <div className="flex-[3] bg-amber-900 overflow-y-auto">
