@@ -1,8 +1,21 @@
-export default async function Home() {
+import ChatList from '@/components/chat/chat-list/chat-list';
+import Chat from '@/components/chat/chat';
+import UserProfile from '@/components/user/user-profile/user-profile';
+
+export default function Home() {
 
   return (
-    <div className="min-h-screen bg-gray flex flex-col items-center justify-center -mt-16">
-      Start
-    </div>
+    <main className="flex mx-auto container h-screen">
+      <div className="flex-[1] pr-4 bg-amber-200 overflow-y-auto flex flex-col">
+
+        <UserProfile />
+
+        <ChatList />
+      </div>
+
+      <div className="flex-[3] bg-amber-900 overflow-y-auto">
+        <Chat />
+      </div>
+    </main>
   );
 }
