@@ -6,9 +6,9 @@ export default function UserProfile() {
   const { mode, toggleColorMode } = useColorMode();
 
   return (
-    <div className="p-4 bg-amber-300 rounded mb-2 min-h-[48px] flex items-center">
+    <div className="p-4 rounded mb-2 min-h-[48px] flex items-center">
       <Button onClick={toggleColorMode} variant="contained">
-        {mode === "dark" ? "Light theme" : "Dark theme"}
+        { mode === "dark" ? "Light theme" : "Dark theme" }
       </Button>
     </div>
   )
