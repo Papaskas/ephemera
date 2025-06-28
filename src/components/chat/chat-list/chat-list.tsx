@@ -14,12 +14,10 @@ const ChatList = ({ chats }: { chats: ChatItem[] }) => {
         sx={{
           width: '100%',
           maxWidth: 360,
-          bgcolor: 'background.paper',
           borderRadius: 2,
           boxShadow: 2,
           p: 3,
           textAlign: 'center',
-          color: 'text.secondary',
         }}
       >
         <Typography variant="body1">Диалогов нет</Typography>
@@ -28,7 +26,7 @@ const ChatList = ({ chats }: { chats: ChatItem[] }) => {
   }
 
   return (
-    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper', borderRadius: 2, boxShadow: 2 }}>
+    <List>
       { chats.map((chat, idx) => (
         <React.Fragment key={ chat.id }>
           <ListItem alignItems="flex-start">
@@ -38,13 +36,12 @@ const ChatList = ({ chats }: { chats: ChatItem[] }) => {
               </Avatar>
             </ListItemAvatar>
             <ListItemText
-              primary={ chat.title}
+              primary={ chat.title }
               secondary={
                 chat.lastMessage ? (
                   <Typography
                     component="span"
                     variant="body2"
-                    sx={{ color: 'text.primary', display: 'inline' }}
                   >
                     { chat.lastMessage }
                   </Typography>

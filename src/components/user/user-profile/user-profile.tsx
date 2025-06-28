@@ -1,5 +1,6 @@
 'use client'
-import ThemeButton from '@/components/buttons/ThemeButton';
+
+import ThemeButton from "@/components/buttons/ThemeButton"
 
 export default function UserProfile() {
 

@@ -2,12 +2,9 @@
 
 import { ButtonOwnProps } from '@mui/material';
 import { LightMode, DarkMode } from '@mui/icons-material';
-import { useColorMode } from '@/components/theme/color-mode-context';
-import * as React from 'react';
-import { useEffect } from 'react';
-import { StrictStore } from 'strict-store';
-import { storeKeys } from '@/domain/keys/storeKeys';
+import React, { useEffect } from 'react';
 import Button from '@/components/buttons/Button';
+import { useTheme } from 'next-themes';
 
 const ThemeButton = (
   {
@@ -28,13 +25,22 @@ const ThemeButton = (
     variant = 'contained',
   }: ButtonOwnProps
 ) => {
-  const { mode, toggleColorMode } = useColorMode()
+  const { resolvedTheme, setTheme } = useTheme()
+  const [mounted, setMounted] = React.useState(false)
 
   useEffect(() => {
-    StrictStore.save(storeKeys.theme, mode)
-  }, [mode])
+    setMounted(true)
+  }, [])
 
-  const themeIcon = mode === "dark" ? <LightMode /> : <DarkMode />
+  if (!mounted)
+    return null
+
+  const isDark = resolvedTheme === 'dark'
+  const themeIcon = isDark ? <LightMode /> : <DarkMode />
+
+  const handleToggleTheme = () => {
+    setTheme(isDark ? 'light' : 'dark')
+  }
 
   return (
     <Button
@@ -53,7 +59,7 @@ const ThemeButton = (
       startIcon={ startIcon }
       sx={ sx }
       variant={ variant }
-      onClick={ toggleColorMode }
+      onClick={ handleToggleTheme }
     >
       { themeIcon }
     </Button>
