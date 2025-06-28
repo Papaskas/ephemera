@@ -1,10 +1,11 @@
 'use client';
 
 import { createContext, useContext } from "react";
+import { ThemeMode } from '@/types/themeMode';
 
 export type ColorModeContextType = {
   toggleColorMode: () => void;
-  mode: 'light' | 'dark';
+  mode: ThemeMode;
 };
 
 export const ColorModeContext = createContext<ColorModeContextType | undefined>(undefined);

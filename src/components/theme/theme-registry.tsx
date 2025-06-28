@@ -5,10 +5,11 @@ import { ThemeProvider, CssBaseline, useMediaQuery } from '@mui/material';
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v15-appRouter';
 import { ColorModeContext } from './color-mode-context';
 import { getTheme } from '@/components/theme/get-theme';
+import { ThemeMode } from '@/types/themeMode';
 
 export default function ThemeRegistry({ children }: { children: React.ReactNode }) {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [mode, setMode] = useState<'light' | 'dark'>(prefersDarkMode ? 'dark' : 'light');
+  const [mode, setMode] = useState<ThemeMode>(prefersDarkMode ? 'dark' : 'light');
 
   const colorMode = useMemo(
     () => ({
